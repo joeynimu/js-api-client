@@ -1,6 +1,6 @@
 {
   "name": "recombee-js-api-client-for-gatsby",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "Client-side js library for easy use of the Recombee recommendation API",
   "main": "./src/index.js",
   "repository": {
@@ -19,9 +19,9 @@
   "author": "Ondrej Fiedler <ondrej.fiedler@recombee.com> (https://www.recombee.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Recombee/js-api-client/issues"
+    "url": "https://github.com/Recombee/js-api-client.git/issues"
   },
-  "homepage": "https://github.com/Recombee/js-api-client#readme",
+  "homepage": "https://github.com/Recombee/js-api-client.git#readme",
   "dependencies": {
     "jssha": "^2.3.1"
   },
