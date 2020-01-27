@@ -1,6 +1,6 @@
 # Recombee API Client
 
-##Important: This is a fork form the original Recombee client. I waanted to use this with Gatsby and I need the package.json to include the main field as opposed to the browser field. Everything else is from the origian client. See links below.
+## Important: This is a fork form the original Recombee client. I waanted to use this with Gatsby and I need the package.json to include the main field as opposed to the browser field. Everything else is from the origian client. See links below.
 
 A javascript library for easy use of the [Recombee](https://www.recombee.com/) recommendation API.
 
