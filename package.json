@@ -19,9 +19,9 @@
   "author": "Ondrej Fiedler <ondrej.fiedler@recombee.com> (https://www.recombee.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Recombee/js-api-client.git/issues"
+    "url": "https://github.com/joeynimu/js-api-client.git/issues"
   },
-  "homepage": "https://github.com/Recombee/js-api-client.git#readme",
+  "homepage": "https://github.com/joeynimu/js-api-client.git#readme",
   "dependencies": {
     "jssha": "^2.3.1"
   },
