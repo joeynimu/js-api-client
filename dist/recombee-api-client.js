@@ -84,23 +84,20 @@ return /******/ (function(modules) { // webpackBootstrap
  * Base class for all the requests
  */
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+class Request {
 
-var Request =
-
-/**
- * Construct the basis of request
- * @param {string} method - GET/PUT/POST/DELETE
- * @param {string} path - Path to the endpoint
- * @param {number} timeout - Timeout in milliseconds
- */
-function Request(method, path, timeout, ensureHttps) {
-  _classCallCheck(this, Request);
-
-  this.method = method;
-  this.path = path;
-  this.timeout = timeout;
-};
+  /**
+   * Construct the basis of request
+   * @param {string} method - GET/PUT/POST/DELETE
+   * @param {string} path - Path to the endpoint
+   * @param {number} timeout - Timeout in milliseconds
+   */
+  constructor(method, path, timeout, ensureHttps) {
+    this.method = method;
+    this.path = path;
+    this.timeout = timeout;
+  }
+}
 
 exports.Request = Request;
 
@@ -117,31 +114,17 @@ exports.Request = Request;
  * Base class for errors that occur because of errors in requests reported by API or because of a timeout
  */
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ApiError = function (_Error) {
-  _inherits(ApiError, _Error);
-
-  function ApiError(message) {
-    _classCallCheck(this, ApiError);
-
-    var _this = _possibleConstructorReturn(this, (ApiError.__proto__ || Object.getPrototypeOf(ApiError)).call(this, message));
-
-    _this.name = _this.constructor.name;
+class ApiError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
     if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(_this, _this.constructor);
+      Error.captureStackTrace(this, this.constructor);
     } else {
-      _this.stack = new Error(message).stack;
+      this.stack = new Error(message).stack;
     }
-    return _this;
   }
-
-  return ApiError;
-}(Error);
+}
 
 exports.ApiError = ApiError;
 
@@ -152,39 +135,24 @@ exports.ApiError = ApiError;
 "use strict";
 
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ae = __webpack_require__(1);
+const ae = __webpack_require__(1);
 
 /**
  * Error thrown when a request did not succeed (did not return 200 or 201)
  */
-
-var ResponseError = function (_ae$ApiError) {
-  _inherits(ResponseError, _ae$ApiError);
-
+class ResponseError extends ae.ApiError {
   /**
    * Create the exception
    * @param {Request} request - ID of the item which will be modified
    * @param {number} statusCode - The values for the individual properties
    * @param {string} message - Error message from the API
    */
-  function ResponseError(request, statusCode, message) {
-    _classCallCheck(this, ResponseError);
-
-    var _this = _possibleConstructorReturn(this, (ResponseError.__proto__ || Object.getPrototypeOf(ResponseError)).call(this, message));
-
-    _this.request = request;
-    _this.statusCode = statusCode;
-    return _this;
+  constructor(request, statusCode, message) {
+    super(message);
+    this.request = request;
+    this.statusCode = statusCode;
   }
-
-  return ResponseError;
-}(ae.ApiError);
+}
 
 exports.ResponseError = ResponseError;
 
@@ -195,36 +163,21 @@ exports.ResponseError = ResponseError;
 "use strict";
 
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ae = __webpack_require__(1);
+const ae = __webpack_require__(1);
 
 /**
  * Error thrown when a request is not processed within the timeout
  */
-
-var TimeoutError = function (_ae$ApiError) {
-  _inherits(TimeoutError, _ae$ApiError);
-
+class TimeoutError extends ae.ApiError {
   /**
    * Create the exception
    * @param {Request} request - Request which caused the exception
    */
-  function TimeoutError(request) {
-    _classCallCheck(this, TimeoutError);
-
-    var _this = _possibleConstructorReturn(this, (TimeoutError.__proto__ || Object.getPrototypeOf(TimeoutError)).call(this, "Client did not get response within " + request.timeout + " ms"));
-
-    _this.request = request;
-    return _this;
+  constructor(request) {
+    super(`Client did not get response within ${request.timeout} ms`);
+    this.request = request;
   }
-
-  return TimeoutError;
-}(ae.ApiError);
+}
 
 exports.TimeoutError = TimeoutError;
 
@@ -267,18 +220,13 @@ exports.RecommendItemsToItem = __webpack_require__(18).RecommendItemsToItem;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var jsSHA = __webpack_require__(8);
-var api_errors = __webpack_require__(9);
+const jsSHA = __webpack_require__(8);
+const api_errors = __webpack_require__(9);
 
 /**
   * Client for sending requests to Recombee and getting replies
   */
-
-var ApiClient = function () {
+class ApiClient {
 
   /**
    * Construct the client
@@ -286,9 +234,7 @@ var ApiClient = function () {
    * @param {string} publicToken - Corresponding public token
    * @param {Object} options - Other custom options
    */
-  function ApiClient(databaseId, publicToken, options) {
-    _classCallCheck(this, ApiClient);
-
+  constructor(databaseId, publicToken, options) {
     this.databaseId = databaseId;
     this.publicToken = publicToken;
     this.options = options || {};
@@ -302,64 +248,56 @@ var ApiClient = function () {
    * @param {Request} request - Request to be sent
    * @param {Object} callback - Optional callback (send returns Promise if omitted) 
    */
-
-
-  _createClass(ApiClient, [{
-    key: 'send',
-    value: function send(request, callback) {
-      var self = this;
-      if (callback === undefined && window.Promise) {
-        return new Promise(function (resolve, reject) {
-          self.send(request, function (err, result) {
-            err ? reject(err) : resolve(result);
-          });
+  send(request, callback) {
+    var self = this;
+    if (callback === undefined && window.Promise) {
+      return new Promise(function (resolve, reject) {
+        self.send(request, function (err, result) {
+          err ? reject(err) : resolve(result);
         });
-      }
+      });
+    }
 
-      var signedUrl = this._signUrl(request.path);
-      var url = (this.useHttps ? 'https://' : 'http://') + this.baseUri + signedUrl;
+    var signedUrl = this._signUrl(request.path);
+    var url = (this.useHttps ? 'https://' : 'http://') + this.baseUri + signedUrl;
 
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", url, this.async);
-      xmlhttp.setRequestHeader("Accept", "application/json");
-      xmlhttp.setRequestHeader("Content-Type", "text/plain");
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", url, this.async);
+    xmlhttp.setRequestHeader("Accept", "application/json");
+    xmlhttp.setRequestHeader("Content-Type", "text/plain");
 
-      if (this.async) xmlhttp.timeout = request.timeout;
+    if (this.async) xmlhttp.timeout = request.timeout;
 
-      xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
-          if (this.responseText) {
-            if (this.status == 200) {
-              if (callback) return callback(null, JSON.parse(this.responseText));
-            } else {
-              if (callback) return callback(new api_errors.ResponseError(request, this.status, this.responseText));
-            }
+    xmlhttp.onreadystatechange = function () {
+      if (this.readyState == 4) {
+        if (this.responseText) {
+          if (this.status == 200) {
+            if (callback) return callback(null, JSON.parse(this.responseText));
+          } else {
+            if (callback) return callback(new api_errors.ResponseError(request, this.status, this.responseText));
           }
         }
-      };
-      xmlhttp.ontimeout = function () {
-        if (callback) return callback(new api_errors.TimeoutError(request));
-      };
+      }
+    };
+    xmlhttp.ontimeout = function () {
+      if (callback) return callback(new api_errors.TimeoutError(request));
+    };
 
-      xmlhttp.send(JSON.stringify(request.bodyParameters()));
-    }
-  }, {
-    key: '_signUrl',
-    value: function _signUrl(req_part) {
-      var url = '/' + this.databaseId + req_part;
-      url += (req_part.indexOf("?") == -1 ? "?" : "&") + "frontend_timestamp=" + parseInt(new Date().getTime() / 1000);
+    xmlhttp.send(JSON.stringify(request.bodyParameters()));
+  }
 
-      var shaObj = new jsSHA("SHA-1", "TEXT");
-      shaObj.setHMACKey(this.publicToken, "TEXT");
-      shaObj.update(url);
+  _signUrl(req_part) {
+    let url = '/' + this.databaseId + req_part;
+    url += (req_part.indexOf("?") == -1 ? "?" : "&") + "frontend_timestamp=" + parseInt(new Date().getTime() / 1000);
 
-      url += "&frontend_sign=" + shaObj.getHMAC("HEX");
-      return url;
-    }
-  }]);
+    let shaObj = new jsSHA("SHA-1", "TEXT");
+    shaObj.setHMACKey(this.publicToken, "TEXT");
+    shaObj.update(url);
 
-  return ApiClient;
-}();
+    url += "&frontend_sign=" + shaObj.getHMAC("HEX");
+    return url;
+  }
+}
 
 exports.ApiClient = ApiClient;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
@@ -629,23 +567,13 @@ exports.TimeoutError = __webpack_require__(3).TimeoutError;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Merges interactions (purchases, ratings, bookmarks, detail views ...) of two different users under a single user ID. This is especially useful for online e-commerce applications working with anonymous users identified by unique tokens such as the session ID. In such applications, it may often happen that a user owns a persistent account, yet accesses the system anonymously while, e.g., putting items into a shopping cart. At some point in time, such as when the user wishes to confirm the purchase, (s)he logs into the system using his/her username and password. The interactions made under anonymous session ID then become connected with the persistent account, and merging these two together becomes desirable.
  * Merging happens between two users referred to as the *target* and the *source*. After the merge, all the interactions of the source user are attributed to the target user, and the source user is **deleted**.
  */
-
-var MergeUsers = function (_rqs$Request) {
-  _inherits(MergeUsers, _rqs$Request);
+class MergeUsers extends rqs.Request {
 
   /**
    * Construct the request
@@ -657,36 +585,26 @@ var MergeUsers = function (_rqs$Request) {
    *         - Type: boolean
    *         - Description: Sets whether the user *targetUserId* should be created if not present in the database.
    */
-  function MergeUsers(targetUserId, sourceUserId, optional) {
-    _classCallCheck(this, MergeUsers);
-
-    var _this = _possibleConstructorReturn(this, (MergeUsers.__proto__ || Object.getPrototypeOf(MergeUsers)).call(this, 'PUT', '/users/' + encodeURIComponent(targetUserId) + '/merge/' + encodeURIComponent(sourceUserId), 30000, false));
-
-    _this.targetUserId = targetUserId;
-    _this.sourceUserId = sourceUserId;
+  constructor(targetUserId, sourceUserId, optional) {
+    super('PUT', `/users/${encodeURIComponent(targetUserId)}/merge/${encodeURIComponent(sourceUserId)}`, 30000, false);
+    this.targetUserId = targetUserId;
+    this.sourceUserId = sourceUserId;
     optional = optional || {};
-    _this.cascadeCreate = optional.cascadeCreate;
-    return _this;
+    this.cascadeCreate = optional.cascadeCreate;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
 
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-  _createClass(MergeUsers, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return MergeUsers;
-}(rqs.Request);
+}
 
 exports.MergeUsers = MergeUsers;
 
@@ -701,22 +619,12 @@ exports.MergeUsers = MergeUsers;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Adds a detail view of a given item made by a given user.
  */
-
-var AddDetailView = function (_rqs$Request) {
-  _inherits(AddDetailView, _rqs$Request);
+class AddDetailView extends rqs.Request {
 
   /**
    * Construct the request
@@ -740,52 +648,42 @@ var AddDetailView = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function AddDetailView(userId, itemId, optional) {
-    _classCallCheck(this, AddDetailView);
-
-    var _this = _possibleConstructorReturn(this, (AddDetailView.__proto__ || Object.getPrototypeOf(AddDetailView)).call(this, 'POST', '/detailviews/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
+  constructor(userId, itemId, optional) {
+    super('POST', '/detailviews/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
     optional = optional || {};
-    _this.timestamp = optional.timestamp;
-    _this.duration = optional.duration;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.timestamp = optional.timestamp;
+    this.duration = optional.duration;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
 
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-  _createClass(AddDetailView, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
+    if (this.duration !== undefined) params.duration = this.duration;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.duration !== undefined) params.duration = this.duration;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return AddDetailView;
-}(rqs.Request);
+}
 
 exports.AddDetailView = AddDetailView;
 
@@ -800,22 +698,12 @@ exports.AddDetailView = AddDetailView;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Adds a purchase of a given item made by a given user.
  */
-
-var AddPurchase = function (_rqs$Request) {
-  _inherits(AddPurchase, _rqs$Request);
+class AddPurchase extends rqs.Request {
 
   /**
    * Construct the request
@@ -845,58 +733,48 @@ var AddPurchase = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function AddPurchase(userId, itemId, optional) {
-    _classCallCheck(this, AddPurchase);
-
-    var _this = _possibleConstructorReturn(this, (AddPurchase.__proto__ || Object.getPrototypeOf(AddPurchase)).call(this, 'POST', '/purchases/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
+  constructor(userId, itemId, optional) {
+    super('POST', '/purchases/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
     optional = optional || {};
-    _this.timestamp = optional.timestamp;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.amount = optional.amount;
-    _this.price = optional.price;
-    _this.profit = optional.profit;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.timestamp = optional.timestamp;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.amount = optional.amount;
+    this.price = optional.price;
+    this.profit = optional.profit;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
 
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-  _createClass(AddPurchase, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.amount !== undefined) params.amount = this.amount;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.price !== undefined) params.price = this.price;
 
-      if (this.amount !== undefined) params.amount = this.amount;
+    if (this.profit !== undefined) params.profit = this.profit;
 
-      if (this.price !== undefined) params.price = this.price;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.profit !== undefined) params.profit = this.profit;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return AddPurchase;
-}(rqs.Request);
+}
 
 exports.AddPurchase = AddPurchase;
 
@@ -911,22 +789,12 @@ exports.AddPurchase = AddPurchase;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Adds a rating of given item made by a given user.
  */
-
-var AddRating = function (_rqs$Request) {
-  _inherits(AddRating, _rqs$Request);
+class AddRating extends rqs.Request {
 
   /**
    * Construct the request
@@ -948,51 +816,41 @@ var AddRating = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function AddRating(userId, itemId, rating, optional) {
-    _classCallCheck(this, AddRating);
-
-    var _this = _possibleConstructorReturn(this, (AddRating.__proto__ || Object.getPrototypeOf(AddRating)).call(this, 'POST', '/ratings/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
-    _this.rating = rating;
+  constructor(userId, itemId, rating, optional) {
+    super('POST', '/ratings/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
+    this.rating = rating;
     optional = optional || {};
-    _this.timestamp = optional.timestamp;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.timestamp = optional.timestamp;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
+    params.rating = this.rating;
 
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-  _createClass(AddRating, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
-      params.rating = this.rating;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return AddRating;
-}(rqs.Request);
+}
 
 exports.AddRating = AddRating;
 
@@ -1007,22 +865,12 @@ exports.AddRating = AddRating;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Adds a cart addition of a given item made by a given user.
  */
-
-var AddCartAddition = function (_rqs$Request) {
-  _inherits(AddCartAddition, _rqs$Request);
+class AddCartAddition extends rqs.Request {
 
   /**
    * Construct the request
@@ -1049,55 +897,45 @@ var AddCartAddition = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function AddCartAddition(userId, itemId, optional) {
-    _classCallCheck(this, AddCartAddition);
-
-    var _this = _possibleConstructorReturn(this, (AddCartAddition.__proto__ || Object.getPrototypeOf(AddCartAddition)).call(this, 'POST', '/cartadditions/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
+  constructor(userId, itemId, optional) {
+    super('POST', '/cartadditions/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
     optional = optional || {};
-    _this.timestamp = optional.timestamp;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.amount = optional.amount;
-    _this.price = optional.price;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.timestamp = optional.timestamp;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.amount = optional.amount;
+    this.price = optional.price;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
 
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-  _createClass(AddCartAddition, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.amount !== undefined) params.amount = this.amount;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.price !== undefined) params.price = this.price;
 
-      if (this.amount !== undefined) params.amount = this.amount;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.price !== undefined) params.price = this.price;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return AddCartAddition;
-}(rqs.Request);
+}
 
 exports.AddCartAddition = AddCartAddition;
 
@@ -1112,22 +950,12 @@ exports.AddCartAddition = AddCartAddition;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Adds a bookmark of a given item made by a given user.
  */
-
-var AddBookmark = function (_rqs$Request) {
-  _inherits(AddBookmark, _rqs$Request);
+class AddBookmark extends rqs.Request {
 
   /**
    * Construct the request
@@ -1148,49 +976,39 @@ var AddBookmark = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function AddBookmark(userId, itemId, optional) {
-    _classCallCheck(this, AddBookmark);
-
-    var _this = _possibleConstructorReturn(this, (AddBookmark.__proto__ || Object.getPrototypeOf(AddBookmark)).call(this, 'POST', '/bookmarks/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
+  constructor(userId, itemId, optional) {
+    super('POST', '/bookmarks/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
     optional = optional || {};
-    _this.timestamp = optional.timestamp;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.timestamp = optional.timestamp;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
 
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-  _createClass(AddBookmark, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return AddBookmark;
-}(rqs.Request);
+}
 
 exports.AddBookmark = AddBookmark;
 
@@ -1205,23 +1023,13 @@ exports.AddBookmark = AddBookmark;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Sets viewed portion of an item (for example a video or article) by a user (at a session).
  * If you send new request with the same (`userId`, `itemId`, `sessionId`), the portion gets updated.
  */
-
-var SetViewPortion = function (_rqs$Request) {
-  _inherits(SetViewPortion, _rqs$Request);
+class SetViewPortion extends rqs.Request {
 
   /**
    * Construct the request
@@ -1246,54 +1054,44 @@ var SetViewPortion = function (_rqs$Request) {
    *         - Type: 
    *         - Description: A dictionary of additional data for the interaction.
    */
-  function SetViewPortion(userId, itemId, portion, optional) {
-    _classCallCheck(this, SetViewPortion);
-
-    var _this = _possibleConstructorReturn(this, (SetViewPortion.__proto__ || Object.getPrototypeOf(SetViewPortion)).call(this, 'POST', '/viewportions/', 3000, false));
-
-    _this.userId = userId;
-    _this.itemId = itemId;
-    _this.portion = portion;
+  constructor(userId, itemId, portion, optional) {
+    super('POST', '/viewportions/', 3000, false);
+    this.userId = userId;
+    this.itemId = itemId;
+    this.portion = portion;
     optional = optional || {};
-    _this.sessionId = optional.sessionId;
-    _this.timestamp = optional.timestamp;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.recommId = optional.recommId;
-    _this.additionalData = optional.additionalData;
-    return _this;
+    this.sessionId = optional.sessionId;
+    this.timestamp = optional.timestamp;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.recommId = optional.recommId;
+    this.additionalData = optional.additionalData;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.userId = this.userId;
+    params.itemId = this.itemId;
+    params.portion = this.portion;
 
+    if (this.sessionId !== undefined) params.sessionId = this.sessionId;
 
-  _createClass(SetViewPortion, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.userId = this.userId;
-      params.itemId = this.itemId;
-      params.portion = this.portion;
+    if (this.timestamp !== undefined) params.timestamp = this.timestamp;
 
-      if (this.sessionId !== undefined) params.sessionId = this.sessionId;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.timestamp !== undefined) params.timestamp = this.timestamp;
+    if (this.recommId !== undefined) params.recommId = this.recommId;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.additionalData !== undefined) params.additionalData = this.additionalData;
 
-      if (this.recommId !== undefined) params.recommId = this.recommId;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.additionalData !== undefined) params.additionalData = this.additionalData;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return SetViewPortion;
-}(rqs.Request);
+}
 
 exports.SetViewPortion = SetViewPortion;
 
@@ -1308,24 +1106,14 @@ exports.SetViewPortion = SetViewPortion;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Based on user's past interactions (purchases, ratings, etc.) with the items, recommends top-N items that are most likely to be of high value for a given user.
  * It is also possible to use POST HTTP method (for example in case of very long ReQL filter) - query parameters then become body parameters.
  * The returned items are sorted by relevancy (first item being the most relevant).
  */
-
-var RecommendItemsToUser = function (_rqs$Request) {
-  _inherits(RecommendItemsToUser, _rqs$Request);
+class RecommendItemsToUser extends rqs.Request {
 
   /**
    * Construct the request
@@ -1425,75 +1213,65 @@ var RecommendItemsToUser = function (_rqs$Request) {
    *         - Type: boolean
    *         - Description: If there is a custom AB-testing running, return name of group to which the request belongs.
    */
-  function RecommendItemsToUser(userId, count, optional) {
-    _classCallCheck(this, RecommendItemsToUser);
-
-    var _this = _possibleConstructorReturn(this, (RecommendItemsToUser.__proto__ || Object.getPrototypeOf(RecommendItemsToUser)).call(this, 'POST', '/recomms/users/' + encodeURIComponent(userId) + '/items/', 9000, false));
-
-    _this.userId = userId;
-    _this.count = count;
+  constructor(userId, count, optional) {
+    super('POST', `/recomms/users/${encodeURIComponent(userId)}/items/`, 9000, false);
+    this.userId = userId;
+    this.count = count;
     optional = optional || {};
-    _this.filter = optional.filter;
-    _this.booster = optional.booster;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.scenario = optional.scenario;
-    _this.logic = optional.logic;
-    _this.returnProperties = optional.returnProperties;
-    _this.includedProperties = optional.includedProperties;
-    _this.diversity = optional.diversity;
-    _this.minRelevance = optional.minRelevance;
-    _this.rotationRate = optional.rotationRate;
-    _this.rotationTime = optional.rotationTime;
-    _this.expertSettings = optional.expertSettings;
-    _this.returnAbGroup = optional.returnAbGroup;
-    return _this;
+    this.filter = optional.filter;
+    this.booster = optional.booster;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.scenario = optional.scenario;
+    this.logic = optional.logic;
+    this.returnProperties = optional.returnProperties;
+    this.includedProperties = optional.includedProperties;
+    this.diversity = optional.diversity;
+    this.minRelevance = optional.minRelevance;
+    this.rotationRate = optional.rotationRate;
+    this.rotationTime = optional.rotationTime;
+    this.expertSettings = optional.expertSettings;
+    this.returnAbGroup = optional.returnAbGroup;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.count = this.count;
 
+    if (this.filter !== undefined) params.filter = this.filter;
 
-  _createClass(RecommendItemsToUser, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.count = this.count;
+    if (this.booster !== undefined) params.booster = this.booster;
 
-      if (this.filter !== undefined) params.filter = this.filter;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.booster !== undefined) params.booster = this.booster;
+    if (this.scenario !== undefined) params.scenario = this.scenario;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.logic !== undefined) params.logic = this.logic;
 
-      if (this.scenario !== undefined) params.scenario = this.scenario;
+    if (this.returnProperties !== undefined) params.returnProperties = this.returnProperties;
 
-      if (this.logic !== undefined) params.logic = this.logic;
+    if (this.includedProperties !== undefined) params.includedProperties = this.includedProperties;
 
-      if (this.returnProperties !== undefined) params.returnProperties = this.returnProperties;
+    if (this.diversity !== undefined) params.diversity = this.diversity;
 
-      if (this.includedProperties !== undefined) params.includedProperties = this.includedProperties;
+    if (this.minRelevance !== undefined) params.minRelevance = this.minRelevance;
 
-      if (this.diversity !== undefined) params.diversity = this.diversity;
+    if (this.rotationRate !== undefined) params.rotationRate = this.rotationRate;
 
-      if (this.minRelevance !== undefined) params.minRelevance = this.minRelevance;
+    if (this.rotationTime !== undefined) params.rotationTime = this.rotationTime;
 
-      if (this.rotationRate !== undefined) params.rotationRate = this.rotationRate;
+    if (this.expertSettings !== undefined) params.expertSettings = this.expertSettings;
 
-      if (this.rotationTime !== undefined) params.rotationTime = this.rotationTime;
+    if (this.returnAbGroup !== undefined) params.returnAbGroup = this.returnAbGroup;
 
-      if (this.expertSettings !== undefined) params.expertSettings = this.expertSettings;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.returnAbGroup !== undefined) params.returnAbGroup = this.returnAbGroup;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return RecommendItemsToUser;
-}(rqs.Request);
+}
 
 exports.RecommendItemsToUser = RecommendItemsToUser;
 
@@ -1508,24 +1286,14 @@ exports.RecommendItemsToUser = RecommendItemsToUser;
 
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var rqs = __webpack_require__(0);
+const rqs = __webpack_require__(0);
 
 /**
  * Recommends set of items that are somehow related to one given item, *X*. Typical scenario  is when user *A* is viewing *X*. Then you may display items to the user that he might be also interested in. Recommend items to item request gives you Top-N such items, optionally taking the target user *A* into account.
  * It is also possible to use POST HTTP method (for example in case of very long ReQL filter) - query parameters then become body parameters.
  * The returned items are sorted by relevancy (first item being the most relevant).
  */
-
-var RecommendItemsToItem = function (_rqs$Request) {
-  _inherits(RecommendItemsToItem, _rqs$Request);
+class RecommendItemsToItem extends rqs.Request {
 
   /**
    * Construct the request
@@ -1641,80 +1409,70 @@ var RecommendItemsToItem = function (_rqs$Request) {
    *         - Type: boolean
    *         - Description: If there is a custom AB-testing running, return name of group to which the request belongs.
    */
-  function RecommendItemsToItem(itemId, targetUserId, count, optional) {
-    _classCallCheck(this, RecommendItemsToItem);
-
-    var _this = _possibleConstructorReturn(this, (RecommendItemsToItem.__proto__ || Object.getPrototypeOf(RecommendItemsToItem)).call(this, 'POST', '/recomms/items/' + encodeURIComponent(itemId) + '/items/', 9000, false));
-
-    _this.itemId = itemId;
-    _this.targetUserId = targetUserId;
-    _this.count = count;
+  constructor(itemId, targetUserId, count, optional) {
+    super('POST', `/recomms/items/${encodeURIComponent(itemId)}/items/`, 9000, false);
+    this.itemId = itemId;
+    this.targetUserId = targetUserId;
+    this.count = count;
     optional = optional || {};
-    _this.filter = optional.filter;
-    _this.booster = optional.booster;
-    _this.cascadeCreate = optional.cascadeCreate;
-    _this.scenario = optional.scenario;
-    _this.logic = optional.logic;
-    _this.returnProperties = optional.returnProperties;
-    _this.includedProperties = optional.includedProperties;
-    _this.userImpact = optional.userImpact;
-    _this.diversity = optional.diversity;
-    _this.minRelevance = optional.minRelevance;
-    _this.rotationRate = optional.rotationRate;
-    _this.rotationTime = optional.rotationTime;
-    _this.expertSettings = optional.expertSettings;
-    _this.returnAbGroup = optional.returnAbGroup;
-    return _this;
+    this.filter = optional.filter;
+    this.booster = optional.booster;
+    this.cascadeCreate = optional.cascadeCreate;
+    this.scenario = optional.scenario;
+    this.logic = optional.logic;
+    this.returnProperties = optional.returnProperties;
+    this.includedProperties = optional.includedProperties;
+    this.userImpact = optional.userImpact;
+    this.diversity = optional.diversity;
+    this.minRelevance = optional.minRelevance;
+    this.rotationRate = optional.rotationRate;
+    this.rotationTime = optional.rotationTime;
+    this.expertSettings = optional.expertSettings;
+    this.returnAbGroup = optional.returnAbGroup;
   }
 
   /**
    * Get body parameters
    * @return {Object} The values of body parameters (name of parameter: value of the parameter)
    */
+  bodyParameters() {
+    let params = {};
+    params.targetUserId = this.targetUserId;
+    params.count = this.count;
 
+    if (this.filter !== undefined) params.filter = this.filter;
 
-  _createClass(RecommendItemsToItem, [{
-    key: 'bodyParameters',
-    value: function bodyParameters() {
-      var params = {};
-      params.targetUserId = this.targetUserId;
-      params.count = this.count;
+    if (this.booster !== undefined) params.booster = this.booster;
 
-      if (this.filter !== undefined) params.filter = this.filter;
+    if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
 
-      if (this.booster !== undefined) params.booster = this.booster;
+    if (this.scenario !== undefined) params.scenario = this.scenario;
 
-      if (this.cascadeCreate !== undefined) params.cascadeCreate = this.cascadeCreate;
+    if (this.logic !== undefined) params.logic = this.logic;
 
-      if (this.scenario !== undefined) params.scenario = this.scenario;
+    if (this.returnProperties !== undefined) params.returnProperties = this.returnProperties;
 
-      if (this.logic !== undefined) params.logic = this.logic;
+    if (this.includedProperties !== undefined) params.includedProperties = this.includedProperties;
 
-      if (this.returnProperties !== undefined) params.returnProperties = this.returnProperties;
+    if (this.userImpact !== undefined) params.userImpact = this.userImpact;
 
-      if (this.includedProperties !== undefined) params.includedProperties = this.includedProperties;
+    if (this.diversity !== undefined) params.diversity = this.diversity;
 
-      if (this.userImpact !== undefined) params.userImpact = this.userImpact;
+    if (this.minRelevance !== undefined) params.minRelevance = this.minRelevance;
 
-      if (this.diversity !== undefined) params.diversity = this.diversity;
+    if (this.rotationRate !== undefined) params.rotationRate = this.rotationRate;
 
-      if (this.minRelevance !== undefined) params.minRelevance = this.minRelevance;
+    if (this.rotationTime !== undefined) params.rotationTime = this.rotationTime;
 
-      if (this.rotationRate !== undefined) params.rotationRate = this.rotationRate;
+    if (this.expertSettings !== undefined) params.expertSettings = this.expertSettings;
 
-      if (this.rotationTime !== undefined) params.rotationTime = this.rotationTime;
+    if (this.returnAbGroup !== undefined) params.returnAbGroup = this.returnAbGroup;
 
-      if (this.expertSettings !== undefined) params.expertSettings = this.expertSettings;
+    params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
+    return params;
+  }
 
-      if (this.returnAbGroup !== undefined) params.returnAbGroup = this.returnAbGroup;
-
-      params.cascadeCreate = this.cascadeCreate !== undefined ? this.cascadeCreate : true;
-      return params;
-    }
-  }]);
-
-  return RecommendItemsToItem;
-}(rqs.Request);
+}
 
 exports.RecommendItemsToItem = RecommendItemsToItem;
 

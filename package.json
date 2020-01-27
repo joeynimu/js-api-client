@@ -1,5 +1,5 @@
 {
-  "name": "recombee-js-api-client",
+  "name": "recombee-js-api-client-for-gatsby",
   "version": "2.4.0",
   "description": "Client-side js library for easy use of the Recombee recommendation API",
   "main": "./src/index.js",
@@ -37,5 +37,9 @@
   "scripts": {
     "build": "neutrino build",
     "lint": "neutrino lint"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "tests"
   }
 }

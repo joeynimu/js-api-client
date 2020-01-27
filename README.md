@@ -1,6 +1,6 @@
 # Recombee API Client
 
-## Important: This is a fork form the original Recombee client. I waanted to use this with Gatsby and I need the package.json to include the main field as opposed to the browser field. Everything else is from the origian client. See links below.
+## Important: This is a fork form the original Recombee client. I wanted to use this with Gatsby and I need the package.json to include the main field as opposed to the browser field. Everything else is from the origian client. See links below.
 
 A javascript library for easy use of the [Recombee](https://www.recombee.com/) recommendation API.
 
@@ -22,16 +22,14 @@ You can download [recombee-api-client.min.js](./dist/recombee-api-client.min.js)
 
 ### npm
 
-Use `npm` also for React Native / NativeScript applications.
-
 ```
-npm install recombee-js-api-client --save
+npm install recombee-js-api-client-for-gatsby --save
 ```
 
 ### Bower
 
 ```
-bower install recombee-js-api-client -S
+bower install recombee-js-api-client-for-gatsby -S
 
 ```
 
