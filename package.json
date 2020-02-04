@@ -1,6 +1,6 @@
 {
   "name": "recombee-js-api-client-for-gatsby",
-  "version": "2.4.7",
+  "version": "2.4.8",
   "description": "Client-side js library for easy use of the Recombee recommendation API",
   "main": "./dist/index.js",
   "repository": {
